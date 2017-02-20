@@ -11,7 +11,7 @@
                 <td><?php echo ($customer['name']); ?></td>
             </tr>
             <tr>
-                <td>Cust Number</td>
+                <td>Customer ID</td>
                 <td><?php echo ($customer['cust_number']); ?></td>
             </tr>
             <tr>
@@ -44,4 +44,123 @@
         </table>
     </div>
 
-@stop
+
+    <?php
+    $stockprice=null;
+    $stotal = 0;
+    $svalue=0;
+    $itotal = 0;
+    $ivalue=0;
+    $mtotal = 0;
+    $mvalue=0;
+    $iportfolio = 0;
+    $cportfolio = 0;
+    ?>
+    <br>
+    <h3>Stocks </h3>
+    <div class="container">
+
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+            <tr class="bg-info">
+                <th>Symbol </th>
+                <th>Stock Name</th>
+                <th>No. of Shares</th>
+                <th>Purchase Price</th>
+                <th>Purchase Date</th>
+                <th>Original Value</th>
+                <th>Current Price</th>
+                <th>Current Value</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            @foreach($customer->stocks as $stock)
+                <tr>
+                    <td>{{ $stock->symbol }}</td>
+                    <td>{{ $stock->name }}</td>
+                    <td>{{ $stock->shares }}</td>
+                    <td>{{ $stock->purchase_price }}</td>
+                    <td>{{ $stock->purchased }}</td>
+                    <td> <?php echo '$', $stock['shares']*$stock['purchase_price'];
+                        $stotal = $stotal + $stock['shares'] * $stock['purchase_price']?>
+                    </td>
+                    <?php
+                    $URL = "http://www.google.com/finance/info?q=NSE:" . $stock['symbol'];
+                    $file = fopen("$URL", "r");
+                    $r = "";
+                    do {
+                        $data = fread($file, 500);
+                        $r .=$data;
+                    } while (strlen($data) != 0);
+
+                    $json = str_replace("\n","", $r);
+                    $data = substr($json, 4, strlen($json) - 5);
+
+                    $json_output = json_decode($data, true);
+                    $price = "\n". $json_output['l'];
+                    ?>
+                    <td><?php echo '$', $price ?></td>
+                    <td> <?php echo '$', $stock['shares'] * $price;
+                        $svalue = $svalue + ($stock['shares'] * $price)
+                        ?></td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+        <h4>
+            <?php echo 'Total of Initial Stock Portfolio $' , number_format($stotal,2); ?>
+            <br>
+            <?php echo 'Total of Current Stock Portfolio $' , number_format($svalue,2); ?>
+        </h4>
+    </div>
+
+
+    <br>
+    <h3>Investments </h3>
+    <div class="container">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+            <tr class="bg-info">
+                <th>Type </th>
+                <th>Acquired Value</th>
+                <th>Acquired Date</th>
+                <th>Recent Value</th>
+                <th>Recent Date</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            @foreach($customer->investments as $investment)
+                <tr>
+                    <td>{{ $investment->type }}</td>
+                    <td>{{ $investment->acquired_value }}
+                    <td>{{ $investment->attained_date }}</td>
+                    <td>{{ $investment->recent_value }}</td>
+                    <td>{{ $investment->recent_date }}</td>
+                    <?php $itotal = $itotal + $investment['acquired_value'] ?></td>
+                    <?php
+                    $ivalue = $ivalue + $investment['recent_value']
+                    ?>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+        <h4>
+            <?php echo 'Total of Initial Investment Portfolio $' , number_format($itotal,2); ?>
+            <br>
+            <?php echo 'Total of Current Investment Portfolio $' , number_format($ivalue,2); ?>
+        </h4>
+
+    </div>
+    <h4>
+    <p><b>Summary of Portfolio</b></p>
+    <?php $iportfolio = $itotal+$stotal;
+    $cportfolio = $ivalue+$svalue;
+    ?>
+    <?php echo 'Total of Initial Portfolio $' , number_format($iportfolio,2); ?>
+    <br>
+    <?php echo 'Total of Current Portfolio $' , number_format($cportfolio,2); ?>
+    </h4>
+
+

@@ -82,5 +82,8 @@ class InvestmentController extends Controller
         $investment = $investment->toArray();
         return response()->json($investment);
     }
-
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
 }
