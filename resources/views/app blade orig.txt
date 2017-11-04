@@ -12,6 +12,7 @@
     <a href="{{ action('StockController@index') }}">Stocks</a> |
     <a href="{{ action('InvestmentController@index') }}">Investments</a>
     <a href="{{ action('MutualfundController@index') }}">Mutualfund</a>
+    <a href="{{ action('HomeController@index') }}">Home</a>
 </div>
 <hr>
 <div class="container">
